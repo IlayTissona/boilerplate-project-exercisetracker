@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const app = express();
-const User = require("./mongo");
+const { User, Exercise } = require("./mongo");
 
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
@@ -14,11 +14,9 @@ app.get("/", (req, res) => {
 app.post("/api/exercise/new-user", (req, res) => {
   const { username } = req.body;
   let newUser = new User({ username });
-  console.log(newUser);
   newUser
     .save()
     .then((saved) => {
-      console.log(saved);
       res.json(saved);
     })
     .catch((e) => {
@@ -26,9 +24,21 @@ app.post("/api/exercise/new-user", (req, res) => {
     });
 });
 
-app.get("api/exercise/users", (req, res) => {
+app.post("/api/exercise/add", (req, res) => {
+  const exercise = new Exercise(req.body);
+  User.findByIdAndUpdate(req.body.userId, { $push: { exercises: exercise } })
+    .then((saved) => {
+      res.json(saved);
+    })
+    .catch((e) => {
+      res.send(e);
+    });
+});
+
+app.get("/api/exercise/users", (req, res) => {
   User.find({})
     .then((users) => {
+      console.log(users);
       res.json(users);
     })
     .catch((e) => {

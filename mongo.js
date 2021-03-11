@@ -10,6 +10,20 @@ mongoose.connect(url, {
 
 const userSchema = new mongoose.Schema({
   username: { type: String, minlength: 3, required: true },
+  exercises: { type: [Exercise], required: false, default: [] },
 });
 
-module.exports = mongoose.model("User", userSchema);
+const exerciseSchema = new mongoose.Schema({
+  userId: { type: String, minlength: 3, required: true },
+  description: String,
+  duration: Number,
+  date: {
+    type: Date,
+    required: false,
+    default: new Date(),
+  },
+});
+
+const User = mongoose.model("User", userSchema);
+const Exercise = mongoose.model("exercise", exerciseSchema);
+module.exports = { User, Exercise };
