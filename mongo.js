@@ -8,11 +8,9 @@ mongoose.connect(url, {
   useCreateIndex: true,
 });
 
-
-
 const userSchema = new mongoose.Schema({
   username: { type: String, minlength: 3, required: true },
-    description: String,
+  description: String,
   duration: Number,
   date: {
     type: String,
@@ -20,6 +18,5 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-
 const User = mongoose.model("User", userSchema);
-module.exports = { User};
+module.exports = { User };
