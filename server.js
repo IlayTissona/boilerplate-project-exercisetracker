@@ -13,7 +13,7 @@ app.get("/", (req, res) => {
 
 app.post("/api/exercise/new-user", (req, res) => {
   const {username} = req.body;
-  let newUser = new User({username})
+  let newUser = new User({username:username})
   console.log(newUser);
   newUser.save().then((saved)=>{
     console.log(saved);

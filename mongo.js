@@ -9,7 +9,7 @@ mongoose.connect(url, {
 });
 
 const userSchema = new mongoose.Schema({
-  userName: { type: String, minlength: 3, required: true },
+  username: { type: String, minlength: 3, required: true },
 });
 
 module.exports = mongoose.model("User", userSchema);
