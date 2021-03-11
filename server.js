@@ -24,18 +24,21 @@ app.post("/api/exercise/new-user", (req, res) => {
     });
 });
 
-
 app.post("/api/exercise/add", (req, res) => {
   const { date, duration, description } = req.body;
   let dateArr;
-  if(req.body.date) dateArr = new Date(date).toString().split(" ");
+  if (req.body.date) dateArr = new Date(date).toString().split(" ");
   else dateArr = new Date().toString().split(" ");
-  const formattedDate = `${dateArr[0]} ${dateArr[1]} ${dateArr[2]} ${dateArr[3]}`
+  const formattedDate = `${dateArr[0]} ${dateArr[1]} ${dateArr[2]} ${dateArr[3]}`;
 
-  console.log("GOT" + req.body)
-  console.log("FORMATDATE" + formattedDate)
+  console.log("GOT" + req.body);
+  console.log("FORMATDATE" + formattedDate);
 
-  User.findByIdAndUpdate(req.body.userId, { date:formattedDate, duration:duration, description :description}, {new:true})
+  User.findByIdAndUpdate(
+    req.body.userId,
+    { date: formattedDate, duration: duration, description: description },
+    { new: true }
+  )
     .then((saved) => {
       console.log("SAVED:" + saved);
       res.json(saved);
