@@ -39,13 +39,12 @@ app.post("/api/exercise/add", (req, res) => {
       .save()
       .then((saved) => {
         const lastExercise = saved.log[saved.log.length - 1];
-        console.log(typeof saved._id);
         res.json({
-          date: lastExercise.date,
-          duration: lastExercise.duration,
-          description: lastExercise.description,
           _id: saved._id,
           username: saved.username,
+          date: lastExercise.date,
+          duration: Number(lastExercise.duration),
+          description: lastExercise.description,
         });
       })
       .catch((e) => {
