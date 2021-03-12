@@ -29,22 +29,22 @@ app.post("/api/exercise/add", (req, res) => {
   let formattedDate;
   if (date) formattedDate = new Date(date).toDateString();
   else formattedDate = new Date().toDateString();
+
   User.findById(req.body.userId)
     .then((userObject) => {
       if (!userObject) return res.status(404).send("Unknown userId");
       if (!userObject.log) userObject.log = [];
       userObject.log.push({ date: formattedDate, duration, description });
-      userObject.date = formattedDate;
-      userObject.duration = duration;
-      userObject.description = description;
       return userObject.save();
     })
     .then((saved) => {
+      const lastExercise = saved.log[saved.log.length - 1];
       res.json({
-        date: saved.date,
-        duration: saved.duration,
-        description: saved.description,
+        date: lastExercise.date,
+        duration: lastExercise.duration,
+        description: lastExercise.description,
         _id: saved._id,
+        username: saved.username,
       });
     })
     .catch((e) => {
@@ -76,6 +76,13 @@ app.get("/api/exercise/log", (req, res) => {
         .filter((exercise) => {
           return (exercise.date > from || !from) && (exercise.date < to || !to);
         });
+
+      res.json({
+        username: user.username,
+        _id: user._id,
+        log: returnArr,
+        counter: returnArr.length,
+      });
     })
     .catch((e) => {
       res.send(e);

@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema(
       required: false,
     },
     log: {
-      type: [object],
+      type: [Object],
       required: false,
     },
   },
