@@ -14,14 +14,12 @@ app.get("/", (req, res) => {
 app.post("/api/exercise/new-user", (req, res) => {
   const { username } = req.body;
   let newUser = new User({ username });
-  console.log(req.body);
   newUser
     .save()
     .then((saved) => {
       res.json(saved);
     })
     .catch((e) => {
-      // console.log(e);
       res.sendStatus(500);
     });
 });
@@ -49,7 +47,6 @@ app.post("/api/exercise/add", (req, res) => {
       })
       .catch((e) => {
         res.send(e);
-        console.log(e);
       });
   });
 });
@@ -95,7 +92,6 @@ app.get("/api/exercise/log", (req, res) => {
     })
     .catch((e) => {
       res.send(e);
-      console.log(e);
     });
 });
 
