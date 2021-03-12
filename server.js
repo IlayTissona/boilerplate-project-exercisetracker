@@ -14,12 +14,14 @@ app.get("/", (req, res) => {
 app.post("/api/exercise/new-user", (req, res) => {
   const { username } = req.body;
   let newUser = new User({ username });
+  console.log(req.body);
   newUser
     .save()
     .then((saved) => {
       res.json(saved);
     })
     .catch((e) => {
+      // console.log(e);
       res.sendStatus(500);
     });
 });
@@ -29,27 +31,28 @@ app.post("/api/exercise/add", (req, res) => {
   let formattedDate;
   if (date) formattedDate = new Date(date).toDateString();
   else formattedDate = new Date().toDateString();
-
-  User.findById(req.body.userId)
-    .then((userObject) => {
-      if (!userObject) return res.status(404).send("Unknown userId");
-      if (!userObject.log) userObject.log = [];
-      userObject.log.push({ date: formattedDate, duration, description });
-      return userObject.save();
-    })
-    .then((saved) => {
-      const lastExercise = saved.log[saved.log.length - 1];
-      res.json({
-        date: lastExercise.date,
-        duration: lastExercise.duration,
-        description: lastExercise.description,
-        _id: saved._id,
-        username: saved.username,
+  User.findById(req.body.userId).then((userObject) => {
+    if (!userObject) return res.status(404).send("Unknown userId");
+    if (!userObject.log) userObject.log = [];
+    userObject.log.push({ date: formattedDate, duration, description });
+    userObject
+      .save()
+      .then((saved) => {
+        const lastExercise = saved.log[saved.log.length - 1];
+        console.log(typeof saved._id);
+        res.json({
+          date: lastExercise.date,
+          duration: lastExercise.duration,
+          description: lastExercise.description,
+          _id: saved._id,
+          username: saved.username,
+        });
+      })
+      .catch((e) => {
+        res.send(e);
+        console.log(e);
       });
-    })
-    .catch((e) => {
-      res.send(e);
-    });
+  });
 });
 
 app.get("/api/exercise/users", (req, res) => {
@@ -68,14 +71,19 @@ app.get("/api/exercise/log", (req, res) => {
   User.findById(userId)
     .then((user) => {
       const { log } = user;
-      const returnArr = log
+      const rawArr = [];
+      log.forEach((element) => {
+        rawArr.push(element);
+      });
+      console.log(rawArr);
+      const returnArr = rawArr
         .sort((a, b) => {
           a.date > b.date;
         })
-        .limit(limit || log.length)
         .filter((exercise) => {
           return (exercise.date > from || !from) && (exercise.date < to || !to);
-        });
+        })
+        .splice(0, limit || rawArr.length);
 
       res.json({
         username: user.username,
@@ -86,6 +94,7 @@ app.get("/api/exercise/log", (req, res) => {
     })
     .catch((e) => {
       res.send(e);
+      console.log(e);
     });
 });
 
