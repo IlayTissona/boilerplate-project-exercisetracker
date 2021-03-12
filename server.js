@@ -29,11 +29,14 @@ app.post("/api/exercise/add", (req, res) => {
   let formattedDate;
   if (date) formattedDate = new Date(date).toDateString();
   else formattedDate = new Date().toDateString();
-  User.findByIdAndUpdate(
-    req.body.userId,
-    { date: formattedDate, duration: duration, description: description },
-    { new: true }
-  )
+  User.findById(req.body.userId)
+    .then((userObject) => {
+      if (!userObject) return res.status(404).send("Unknown userId");
+      userObject.date = formattedDate;
+      userObject.duration = duration;
+      userObject.description = description;
+      return userObject.save();
+    })
     .then((saved) => {
       delete saved.__v;
       console.log("SAVED:" + saved);
