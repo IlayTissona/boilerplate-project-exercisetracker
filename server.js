@@ -75,13 +75,15 @@ app.get("/api/exercise/log", (req, res) => {
       log.forEach((element) => {
         rawArr.push(element);
       });
-      console.log(rawArr);
       const returnArr = rawArr
         .sort((a, b) => {
           a.date > b.date;
         })
         .filter((exercise) => {
-          return (exercise.date > from || !from) && (exercise.date < to || !to);
+          return (
+            (new Date(exercise.date) > new Date(from) || !from) &&
+            (new Date(exercise.date) < new Date(to) || !to)
+          );
         })
         .splice(0, limit || rawArr.length);
 
@@ -89,7 +91,7 @@ app.get("/api/exercise/log", (req, res) => {
         username: user.username,
         _id: user._id,
         log: returnArr,
-        counter: returnArr.length,
+        count: returnArr.length,
       });
     })
     .catch((e) => {
