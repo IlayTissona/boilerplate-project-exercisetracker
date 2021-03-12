@@ -32,15 +32,20 @@ app.post("/api/exercise/add", (req, res) => {
   User.findById(req.body.userId)
     .then((userObject) => {
       if (!userObject) return res.status(404).send("Unknown userId");
+      if (!userObject.log) userObject.log = [];
+      userObject.log.push({ date: formattedDate, duration, description });
       userObject.date = formattedDate;
       userObject.duration = duration;
       userObject.description = description;
       return userObject.save();
     })
     .then((saved) => {
-      delete saved.__v;
-      console.log("SAVED:" + saved);
-      res.json(saved);
+      res.json({
+        date: saved.date,
+        duration: saved.duration,
+        description: saved.description,
+        _id: saved._id,
+      });
     })
     .catch((e) => {
       res.send(e);
@@ -51,6 +56,26 @@ app.get("/api/exercise/users", (req, res) => {
   User.find({})
     .then((users) => {
       res.json(users);
+    })
+    .catch((e) => {
+      res.send(e);
+    });
+});
+
+app.get("/api/exercise/log", (req, res) => {
+  const { userId, from, to, limit } = req.query;
+  if (!userId) res.send("User ID required");
+  User.findById(userId)
+    .then((user) => {
+      const { log } = user;
+      const returnArr = log
+        .sort((a, b) => {
+          a.date > b.date;
+        })
+        .limit(limit || log.length)
+        .filter((exercise) => {
+          return (exercise.date > from || !from) && (exercise.date < to || !to);
+        });
     })
     .catch((e) => {
       res.send(e);
